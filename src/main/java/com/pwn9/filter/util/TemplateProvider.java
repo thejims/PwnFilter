@@ -18,23 +18,11 @@
  *
  */
 
-package com.pwn9.filter.minecraft.tag;
+package com.pwn9.filter.util;
 
-import com.pwn9.filter.sponge.PwnFilterPlayer;
-import com.pwn9.filter.engine.api.FilterContext;
-import com.pwn9.filter.engine.api.MessageAuthor;
-import com.pwn9.filter.util.tag.Tag;
+import java.io.InputStream;
 
-/**
- * Return the World a Player currently inhabits.
- * Created by Sage905 on 15-09-04.
- */
-public class WorldTag implements Tag {
+public interface TemplateProvider {
 
-    @Override
-    public String getValue(FilterContext filterTask) {
-        MessageAuthor author = filterTask.getAuthor();
-        return (author instanceof PwnFilterPlayer)
-                ? ((PwnFilterPlayer) author).getWorldName() : "";
-    }
+    InputStream getResource(String name);
 }

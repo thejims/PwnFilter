@@ -18,26 +18,31 @@
  *
  */
 
-package com.pwn9.filter.minecraft;
+package com.pwn9.filter.sponge.listener;
 
-import com.google.common.collect.MapMaker;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
+import com.pwn9.filter.minecraft.DeathMessages;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.text.Text;
 
 /**
- * Simple Singleton to track Player Death Messages
- * Created by Sage905 on 15-09-08.
+ * Catch Death events to rewrite them with a custom message.
+ *
+ * @author Sage905
+ * @version $Id: $Id
  */
-public class DeathMessages {
-    public static final ConcurrentMap<UUID, String> killedPlayers = new MapMaker().concurrencyLevel(2).weakKeys().makeMap();
+public class PwnFilterEntityListener {
 
     /**
-     * <p>addKilledPlayer.</p>
+     * <p>onEntityDeath.</p>
      *
-     * @param p       a {@link org.bukkit.entity.Player} object.
-     * @param message a {@link String} object.
+     * @param event a {@link org.spongepowered.api.event.entity.DestructEntityEvent.Death} object.
      */
-    public static void addKilledPlayer(UUID p, String message) {
-        killedPlayers.put(p, message);
+    @Listener
+    public void onEntityDeath(DestructEntityEvent.Death event) {
+        if (DeathMessages.killedPlayers.containsKey(event.getTargetEntity().getUniqueId())) {
+            event.setMessage(Text.of(DeathMessages.killedPlayers.remove(event.getTargetEntity().getUniqueId())));
+        }
     }
+
 }

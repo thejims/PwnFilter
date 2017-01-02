@@ -21,14 +21,13 @@
 package com.pwn9.filter.engine.rules.action.minecraft;
 
 import com.google.common.collect.ImmutableList;
-import com.pwn9.filter.bukkit.BukkitPlayer;
+import com.pwn9.filter.sponge.PwnFilterPlayer;
 import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.api.MessageAuthor;
 import com.pwn9.filter.engine.rules.action.InvalidActionException;
 import com.pwn9.filter.util.tag.TagRegistry;
-import org.bukkit.ChatColor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,7 +58,7 @@ class BroadcastFile implements Action {
         Path filePath = sourceDir.toPath().resolve(s);
         try (Stream<String> sourceLines = Files.lines(filePath)) {
             sourceLines.forEach((String message) ->
-                    messages.add(ChatColor.translateAlternateColorCodes('&', message)));
+                    messages.add( message));
         } catch (FileNotFoundException ex) {
             throw new InvalidActionException("File not found while trying to add Action: " + ex.getMessage());
         } catch (IOException ex) {
@@ -82,9 +81,9 @@ class BroadcastFile implements Action {
                 (preparedMessages.size() > 1 ? "..." : ""));
 
         MessageAuthor author = filterTask.getAuthor();
-        if (author instanceof BukkitPlayer) {
+        if (author instanceof PwnFilterPlayer) {
             filterTask.addLogMessage("Broadcasted: " + preparedMessages.get(0) + (preparedMessages.size() > 1 ? "..." : ""));
-            ((BukkitPlayer) author).getMinecraftAPI().sendBroadcast(preparedMessages);
+            ((PwnFilterPlayer) author).getMinecraftAPI().sendBroadcast(preparedMessages);
         }
     }
 }

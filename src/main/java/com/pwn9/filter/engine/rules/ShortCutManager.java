@@ -24,7 +24,9 @@ import java.io.*;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
+import org.slf4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +53,7 @@ public class ShortCutManager {
         return _instance;
     }
 
-    public static String replace(Logger logger, Map<String, String> shortcuts, String lineData) {
+    public static String replace(Map<String, String> shortcuts, String lineData) {
         // If we don't have a shortcuts file to process, just return what we were given.
         if (shortcuts == null) return lineData;
 
@@ -63,7 +65,7 @@ public class ShortCutManager {
             String var = thisMatch.substring(1, thisMatch.length() - 1);
             String replacement = shortcuts.get(var.toLowerCase());
             if (replacement == null || replacement.isEmpty()) {
-                logger.warning("Could not find shortcut: <" + var + ">" +
+                PwnFilterSpongePlugin.getLogger().warn("Could not find shortcut: <" + var + ">" +
                         "when parsing: '" + lineData + "'");
                 matcher.appendReplacement(newLineData, "");
             } else {
@@ -72,7 +74,7 @@ public class ShortCutManager {
         }
         matcher.appendTail(newLineData);
         if (!newLineData.toString().equals(lineData)) {
-            logger.finer(() -> "Original regex: " + lineData + "\n New regex: " + newLineData);
+            PwnFilterSpongePlugin.getLogger().trace("Original regex: " + lineData + "\n New regex: " + newLineData);
         }
         return newLineData.toString();
 

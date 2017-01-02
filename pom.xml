@@ -64,12 +64,7 @@
         </repository>
         <repository>
             <id>vault-repo</id>
-            <url>
-                http://nexus.theyeticave.net/content/repositories/pub_releases/
-            </url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
         <repository>
             <id>central</id>
@@ -80,15 +75,18 @@
             <id>Plugin Metrics</id>
             <url>http://repo.mcstats.org/content/repositories/public</url>
         </repository>
-
+		<repository>
+			<id>ninja.leaping.configurate.configurate-yaml</id>
+			<url>https://mvnrepository.com/artifact/ninja.leaping.configurate/configurate-yaml</url>
+		</repository>
     </repositories>
 
 
     <dependencies>
-        <dependency>
+	    <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>4.0.3</version>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -104,7 +102,8 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
@@ -128,6 +127,12 @@
             <artifactId>concurrentunit</artifactId>
             <version>0.4.2</version>
         </dependency>
+		<!-- https://mvnrepository.com/artifact/ninja.leaping.configurate/configurate-yaml -->
+		<dependency>
+			<groupId>ninja.leaping.configurate</groupId>
+			<artifactId>configurate-yaml</artifactId>
+			<version>3.2</version>
+		</dependency>
 
     </dependencies>
 
@@ -229,6 +234,9 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>*.*</include>
+                    <include>*/*</include>
+                    <include>*/*/*</include>
+                    <include>*/*/*/*</include>
                 </includes>
             </resource>
         </resources>

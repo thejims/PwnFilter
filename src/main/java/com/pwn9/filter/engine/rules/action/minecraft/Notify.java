@@ -25,7 +25,6 @@ import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.rules.action.InvalidActionException;
 import com.pwn9.filter.util.tag.TagRegistry;
-import org.bukkit.ChatColor;
 
 /**
  * Notify all users with the permission specified in notifyperm:
@@ -52,7 +51,7 @@ class Notify implements Action {
         if (parts.length < 2 || parts[0].isEmpty() || parts[1].isEmpty())
             throw new InvalidActionException("'notify' action requires a permission or 'console', and a message.");
 
-        return new Notify(parts[0], ChatColor.translateAlternateColorCodes('&', parts[1]));
+        return new Notify(parts[0],  parts[1]);
 
     }
 

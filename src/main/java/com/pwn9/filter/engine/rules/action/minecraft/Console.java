@@ -20,7 +20,7 @@
 
 package com.pwn9.filter.engine.rules.action.minecraft;
 
-import com.pwn9.filter.bukkit.BukkitPlayer;
+import com.pwn9.filter.sponge.PwnFilterPlayer;
 import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
@@ -58,9 +58,9 @@ class Console implements Action {
     public void execute(final FilterContext filterTask, FilterService filterService) {
         final String cmd = TagRegistry.replaceTags(command, filterTask);
         MessageAuthor author = filterTask.getAuthor();
-        if (author instanceof BukkitPlayer) {
+        if (author instanceof PwnFilterPlayer) {
             filterTask.addLogMessage("Sending console command: " + cmd);
-            ((BukkitPlayer) author).getMinecraftAPI().executeCommand(cmd);
+            ((PwnFilterPlayer) author).getMinecraftAPI().executeCommand(cmd);
         } else {
             filterTask.addLogMessage("Failed to send console command to non-Bukkit Player: " + cmd);
         }

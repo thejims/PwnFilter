@@ -1,3 +1,0 @@
-match test
-then replace woo!
-then burn Burned!

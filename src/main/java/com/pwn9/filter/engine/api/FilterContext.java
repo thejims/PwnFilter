@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
  */
 public class FilterContext {
     private final EnhancedString originalMessage; // Original message
+    private String command; // Original command if a command
     private final MessageAuthor author; // Author that this event is connected to.
     private final FilterClient filterClient;
     private final List<String> logMessages = new ArrayList<>(); // Rules can add strings to this array.  They will be output to log if log=true
@@ -82,7 +83,19 @@ public class FilterContext {
                          FilterClient filterClient) {
         this(new SimpleString(originalString), author, filterClient);
     }
-
+    /**
+     * A convenience Constructor that wraps a plain String into an
+     * {@link EnhancedString} object.
+     * @param originalString A plain {@link String} to apply rules to.
+     * @param cmd Command
+     * @param author The {@link MessageAuthor} to perform rule actions on.
+     * @param filterClient The {@link FilterClient} source of this message.
+     */
+    public FilterContext(String originalString, String cmd, MessageAuthor author,
+                         FilterClient filterClient) {
+        this(new SimpleString(originalString), author, filterClient);
+        this.command = cmd;
+    }
     /**
      * Add a string to the list of log messages that will be written to the
      * logfile / console.
@@ -128,6 +141,8 @@ public class FilterContext {
     public EnhancedString getModifiedMessage() {
         return modifiedMessage;
     }
+
+    public String getCommand() { return command; }
 
     public void setModifiedMessage(EnhancedString newMessage) {
         modifiedMessage = newMessage;

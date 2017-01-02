@@ -1,3 +1,0 @@
-include ExtraRules.txt
-
-include Epic/chat.txt

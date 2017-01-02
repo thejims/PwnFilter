@@ -29,6 +29,7 @@ import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.rules.Condition;
 import com.pwn9.filter.engine.rules.Rule;
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
@@ -105,25 +106,21 @@ public class RuleChain implements Chain, ChainEntry {
         apply(context, filterService);
 
         if (!context.getMatchedRules().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Rule r : context.getMatchedRules()) {
+                sb.append(" ");
+                sb.append(r.getId().isEmpty() ? "pattern: " + r.getPattern() : "Rule ID: " + r.getId());
+            }
 
-            filterService.getLogger().finest(() ->
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (Rule r : context.getMatchedRules()) {
-                            sb.append(" ");
-                            sb.append(r.getId().isEmpty() ? "pattern: " + r.getPattern() : "Rule ID: " + r.getId());
-                        }
+            PwnFilterSpongePlugin.getLogger().debug("\nDebug matched" + sb.toString() +
+                    "\nDebug original: " + context.getOriginalMessage().getRaw() +
+                    "\nDebug current: " + context.getModifiedMessage().getRaw() +
+                    "\nDebug log: " + (context.loggingOn() ? "yes" : "no") +
+                    "\nDebug deny: " + (context.isCancelled() ? "yes" : "no"));
 
-                        return "\nDebug matched" + sb.toString() +
-                                "\nDebug original: " + context.getOriginalMessage().getRaw() +
-                                "\nDebug current: " + context.getModifiedMessage().getRaw() +
-                                "\nDebug log: " + (context.loggingOn() ? "yes" : "no") +
-                                "\nDebug deny: " + (context.isCancelled() ? "yes" : "no");
-                    }
-            );
 
         } else {
-            filterService.getLogger().finest(() -> "Debug no match: " + context.getOriginalMessage().getRaw());
+            PwnFilterSpongePlugin.getLogger().debug("Debug no match: " + context.getOriginalMessage().getRaw());
         }
 
         if (context.isCancelled()) {
@@ -138,7 +135,7 @@ public class RuleChain implements Chain, ChainEntry {
 
         // Log any messages from "then log" actions
         context.getLogMessages().stream().filter(s -> context.loggingOn())
-                .forEach(filterService.getLogger()::info);
+                .forEach(PwnFilterSpongePlugin.getLogger()::info);
     }
 
     public List<ChainEntry> getChain() {

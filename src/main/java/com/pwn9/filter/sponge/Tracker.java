@@ -18,32 +18,56 @@
  *
  */
 
-package com.pwn9.filter.engine.rules.action.core;
+package com.pwn9.filter.sponge;
 
-import com.pwn9.filter.engine.FilterService;
-import com.pwn9.filter.engine.api.Action;
-import com.pwn9.filter.engine.api.FilterContext;
+import org.mcstats.Metrics;
 
-/**
- * Rewrite the string by replacing the matched text with the provided string.
- */
-class Rewrite implements Action {
+class Tracker extends Metrics.Plotter {
 
-    // messageString is what we will use to replace any matched text.
-    private final String messageString;
+    private final String name;
+    private int value, last;
 
-    private Rewrite(String message) {
-        messageString = message;
+    /**
+     * <p>Constructor for Tracker.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
+    Tracker(String name) {
+        this.name = name;
+        this.value = 0;
+        this.last = 0;
     }
 
-    static Action getAction(String s) {
-        return new Rewrite(s);
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void execute(final FilterContext filterTask, FilterService filterService) {
-        filterTask.setModifiedMessage(filterTask.getModifiedMessage().
-                replaceText(filterTask.getPattern(), messageString));
-
+    public String getColumnName() {
+        return this.name;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getValue() {
+        this.last = this.value;
+        return this.value;
+    }
+
+    /**
+     * <p>increment.</p>
+     */
+    void increment() {
+        this.value++;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reset() {
+        this.value = this.value - this.last;
+    }
+
 }

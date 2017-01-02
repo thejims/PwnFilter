@@ -20,7 +20,7 @@
 
 package com.pwn9.filter.engine.rules.action.minecraft;
 
-import com.pwn9.filter.bukkit.BukkitPlayer;
+import com.pwn9.filter.sponge.PwnFilterPlayer;
 import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
@@ -55,10 +55,10 @@ public class Command implements Action {
      * {@inheritDoc}
      */
     public void execute(final FilterContext filterTask, FilterService filterService) {
-        filterTask.setCancelled();
+        //filterTask.setCancelled();
         final String cmd;
-        if (filterTask.getAuthor() instanceof BukkitPlayer) {
-            BukkitPlayer player = (BukkitPlayer) filterTask.getAuthor();
+        if (filterTask.getAuthor() instanceof PwnFilterPlayer) {
+            PwnFilterPlayer player = (PwnFilterPlayer) filterTask.getAuthor();
 
             if (!command.isEmpty()) {
                 cmd = TagRegistry.replaceTags(command, filterTask);

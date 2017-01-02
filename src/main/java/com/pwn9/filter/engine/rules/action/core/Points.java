@@ -27,7 +27,7 @@ import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.api.MessageAuthor;
 import com.pwn9.filter.engine.rules.Rule;
 import com.pwn9.filter.engine.rules.action.InvalidActionException;
-import org.bukkit.ChatColor;
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
 
 /**
  * Add the configured number of points to the players account.
@@ -56,7 +56,7 @@ class Points implements Action {
         } catch (NumberFormatException e) {
             throw new InvalidActionException("'points' action did not have a valid amount.");
         }
-        message = (parts.length > 1) ? ChatColor.translateAlternateColorCodes('&', parts[1]) : "";
+        message = (parts.length > 1) ? parts[1] : "";
 
         return new Points(message, points);
     }
@@ -70,7 +70,7 @@ class Points implements Action {
         PointManager pm = filterService.getPointManager();
         if (!pm.isEnabled()) {
             Rule thisRule = filterTask.getRule();
-            filterService.getLogger().fine(String.format("Rule: %s has 'then points', but PointManager is disabled in config.yml",
+            PwnFilterSpongePlugin.getLogger().warn(String.format("Rule: %s has 'then points', but PointManager is disabled in config.yml",
                     (thisRule != null) ? thisRule.getId() : "None"));
             return;
         }

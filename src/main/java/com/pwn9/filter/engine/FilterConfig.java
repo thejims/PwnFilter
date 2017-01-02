@@ -20,11 +20,11 @@
 
 package com.pwn9.filter.engine;
 
-import com.pwn9.filter.bukkit.TemplateProvider;
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
+import com.pwn9.filter.util.TemplateProvider;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * Object to hold the configuration of the PwnFilter Engine
@@ -34,15 +34,9 @@ import java.util.logging.Logger;
 
 public class FilterConfig {
 
-    private final Logger logger;
     private volatile File textDir;
     private volatile File rulesDir;
-    private Level logLevel;
     private TemplateProvider templateProvider;
-
-    FilterConfig(Logger logger) {
-        this.logger = logger;
-    }
 
     /* Getters and Setters */
 
@@ -68,18 +62,6 @@ public class FilterConfig {
 
     public void setTemplateProvider(TemplateProvider templateProvider) {
         this.templateProvider = templateProvider;
-    }
-
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public Level getLogLevel() {
-        return logLevel;
-    }
-
-    public void setLogLevel(Level logLevel) {
-        this.logLevel = logLevel;
     }
 
     public File getRuleFile(String path) {
@@ -129,10 +111,10 @@ public class FilterConfig {
                 fout.write(data, 0, c);
             fin.close();
             fout.close();
-            logger.info("Created file from template: " + configName);
+            PwnFilterSpongePlugin.getLogger().info("Created file from template: " + configName);
             return true;
         } else {
-            logger.warning("Failed to create file from template: " + configName);
+            PwnFilterSpongePlugin.getLogger().warn("Failed to create file from template: " + configName);
             return false;
         }
     }

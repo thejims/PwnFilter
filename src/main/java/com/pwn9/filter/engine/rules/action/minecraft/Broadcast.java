@@ -20,13 +20,12 @@
 
 package com.pwn9.filter.engine.rules.action.minecraft;
 
-import com.pwn9.filter.bukkit.BukkitPlayer;
+import com.pwn9.filter.sponge.PwnFilterPlayer;
 import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.api.MessageAuthor;
 import com.pwn9.filter.util.tag.TagRegistry;
-import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 
@@ -49,7 +48,7 @@ class Broadcast implements Action {
     static Action getAction(String s) {
         //TODO: Handle chatcolors outside of FilterService?
 
-        return new Broadcast(ChatColor.translateAlternateColorCodes('&', s).split("\n"));
+        return new Broadcast(s.split("\n"));
     }
 
     /**
@@ -69,9 +68,9 @@ class Broadcast implements Action {
         }
 
         MessageAuthor author = filterTask.getAuthor();
-        if (author instanceof BukkitPlayer) {
+        if (author instanceof PwnFilterPlayer) {
             filterTask.addLogMessage("Broadcasted: " + preparedMessages.get(0) + (preparedMessages.size() > 1 ? "..." : ""));
-            ((BukkitPlayer) author).getMinecraftAPI().sendBroadcast(preparedMessages);
+            ((PwnFilterPlayer) author).getMinecraftAPI().sendBroadcast(preparedMessages);
         }
     }
 }

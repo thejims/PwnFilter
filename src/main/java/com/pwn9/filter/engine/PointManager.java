@@ -25,6 +25,7 @@ import com.pwn9.filter.engine.api.FilterClient;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.api.MessageAuthor;
 import com.pwn9.filter.engine.rules.chain.RuleChain;
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
 import com.pwn9.filter.util.SimpleString;
 import org.jetbrains.annotations.NotNull;
 
@@ -235,7 +236,7 @@ public class PointManager implements FilterClient {
         void executeAscending(UUID id, FilterClient client) {
             FilterContext state = new FilterContext(new SimpleString(""), getFilterService().getAuthor(id), client);
             for (Action a : actionsAscending) {
-                client.getFilterService().getLogger().finest("Executing Action: " + a + " on " + state.getAuthor().getName());
+                PwnFilterSpongePlugin.getLogger().trace("Executing Action: " + a + " on " + state.getAuthor().getName());
                 a.execute(state, filterService);
             }
         }
@@ -243,7 +244,7 @@ public class PointManager implements FilterClient {
         void executeDescending(UUID id, FilterClient client) {
             FilterContext state = new FilterContext(new SimpleString(""), getFilterService().getAuthor(id), client);
             for (Action a : actionsDescending) {
-                client.getFilterService().getLogger().finest("Executing Action: " + a + " on " + state.getAuthor().getName());
+                PwnFilterSpongePlugin.getLogger().trace("Executing Action: " + a + " on " + state.getAuthor().getName());
                 a.execute(state, filterService);
             }
         }

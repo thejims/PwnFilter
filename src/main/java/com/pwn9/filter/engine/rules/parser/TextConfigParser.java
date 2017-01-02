@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
+import org.slf4j.Logger;
 
 /**
  * Text-file Rule Parser
@@ -55,12 +57,10 @@ public class TextConfigParser implements FilterConfigParser {
      */
 
     private final Map<String, String> shortcuts = new HashMap<>();
-    private final Logger logger;
     private final ActionFactory actionFactory;
     private final FilterConfig filterConfig;
 
     public TextConfigParser(FilterService filterService) {
-        this.logger = filterService.getLogger();
         this.actionFactory = filterService.getActionFactory();
         this.filterConfig = filterService.getConfig();
     }
@@ -154,7 +154,7 @@ public class TextConfigParser implements FilterConfigParser {
                     }
                     // Parse a rule starting with the pattern
                     else if (command.matches("match|catch|replace|rewrite")) {
-                        String pattern = ShortCutManager.replace(logger, shortcuts, tokenString.getString());
+                        String pattern = ShortCutManager.replace(shortcuts, tokenString.getString());
                         parseRule(new Rule(pattern), reader.readSection(), builder, actionFactory);
                     }
                     // Parse a rule starting with the ID/Description
@@ -173,7 +173,7 @@ public class TextConfigParser implements FilterConfigParser {
 
         } catch (IOException e) {
             String err = "IO Exception during processing: " + e.getMessage();
-            logger.severe(err);
+            PwnFilterSpongePlugin.getLogger().error(err);
             throw new InvalidChainException(err);
         }
         return builder.build();
@@ -196,7 +196,7 @@ public class TextConfigParser implements FilterConfigParser {
                 rule.setId(tokenString.popToken()); // First argument is the ID
                 rule.setDescription(tokenString.getString()); // Second argument is the Description
             } else if (command.equalsIgnoreCase("match")) {
-                rule.setPattern(ShortCutManager.replace(logger, shortcuts, tokenString.getString()));
+                rule.setPattern(ShortCutManager.replace(shortcuts, tokenString.getString()));
             }
             // conditions <conditiongroup>
             else if (command.equalsIgnoreCase("conditions")) {
@@ -217,7 +217,7 @@ public class TextConfigParser implements FilterConfigParser {
                 String actionName = tokenString.popToken();
                 try {
                     rule.addAction(factory.getAction(actionName, tokenString.getString()));
-                    logger.finest("(parser) then action: " + actionName);
+                    PwnFilterSpongePlugin.getLogger().debug("(parser) then action: " + actionName);
                 } catch (InvalidActionException ex) {
                     throw new ParseException("Error in action line: " + ex.getMessage(), line.number);
                 }
@@ -319,7 +319,7 @@ public class TextConfigParser implements FilterConfigParser {
         // the same files, but have different actions.  Eg: a chat filter might want to kick a player
         // but an itemfilter would not kick the player, and instead destroy the item.
 
-        logger.fine("Including chain: " + lineData + " in: " + parentBuilder.getConfigName());
+        PwnFilterSpongePlugin.getLogger().debug("Including chain: " + lineData + " in: " + parentBuilder.getConfigName());
 
         //TODO: Fix infinite loop problems.
 //        if (getParents().contains(lineData))

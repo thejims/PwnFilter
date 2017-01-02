@@ -20,12 +20,11 @@
 
 package com.pwn9.filter.engine.rules.action.targeted;
 
-import com.pwn9.filter.bukkit.BukkitPlayer;
+import com.pwn9.filter.sponge.PwnFilterPlayer;
 import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.util.tag.TagRegistry;
-import org.bukkit.ChatColor;
 
 /**
  * Warn the user with the string provided.
@@ -46,7 +45,7 @@ class Warn implements Action {
     }
 
     public static Action getAction(String s) {
-        return new Warn((s != null && !s.isEmpty() ? ChatColor.translateAlternateColorCodes('&', s) : defaultMessage));
+        return new Warn((s != null && !s.isEmpty() ? s : defaultMessage));
     }
 
     static void setDefaultMessage(String s) {
@@ -57,7 +56,7 @@ class Warn implements Action {
      * {@inheritDoc}
      */
     public void execute(final FilterContext filterTask, FilterService filterService) {
-        if (filterTask.getAuthor() instanceof BukkitPlayer) {
+        if (filterTask.getAuthor() instanceof PwnFilterPlayer) {
 
             final String message = TagRegistry.replaceTags(messageString, filterTask);
             filterTask.getAuthor().sendMessage(messageString);

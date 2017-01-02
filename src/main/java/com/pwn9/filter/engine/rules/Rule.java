@@ -24,10 +24,10 @@ import com.pwn9.filter.engine.FilterService;
 import com.pwn9.filter.engine.api.Action;
 import com.pwn9.filter.engine.api.FilterContext;
 import com.pwn9.filter.engine.rules.chain.ChainEntry;
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
 import com.pwn9.filter.util.LimitedRegexCharSequence;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,11 +158,9 @@ public class Rule implements ChainEntry {
      */
     public void apply(FilterContext filterContext, FilterService filterService) {
 
-        Logger logger = filterService.getLogger();
-
         // If finest logging is set, then generate our logging info. (This is a
         // lambda + Supplier pattern.)
-        logger.finest(() -> "Testing Pattern: '" + pattern.toString() + "' on string: '" +
+        PwnFilterSpongePlugin.getLogger().debug("Testing Pattern: '" + pattern.toString() + "' on string: '" +
                 filterContext.getModifiedMessage().toString() + "'");
 
         // Check if action matches the current state of the message
@@ -174,8 +172,8 @@ public class Rule implements ChainEntry {
         try {
             if (!matcher.find()) return;
         } catch (LimitedRegexCharSequence.RegexTimeoutException ex) {
-            logger.severe("Regex match timed out! Regex: " + pattern.toString());
-            logger.severe("Failed string was: " + limitedRegexCharSequence);
+            PwnFilterSpongePlugin.getLogger().error("Regex match timed out! Regex: " + pattern.toString());
+            PwnFilterSpongePlugin.getLogger().error("Failed string was: " + limitedRegexCharSequence);
             return;
         } catch (RuntimeException ex) {
             // Note: Due to this:
@@ -191,9 +189,11 @@ public class Rule implements ChainEntry {
         filterContext.addLogMessage("|" + filterContext.getFilterClient().getShortName() + "| MATCH " +
                 (id.isEmpty() ? "" : "(" + id + ")") +
                 " <" +
-                filterContext.getAuthor().getName() + "> " + filterContext.getModifiedMessage().toString());
+                filterContext.getAuthor().getName() + "> " +
+                (filterContext.getCommand() == null ? "" : "/" + filterContext.getCommand() + " ") +
+                filterContext.getModifiedMessage().toString());
 
-        logger.fine(() -> "Match String: " + matcher.group());
+        PwnFilterSpongePlugin.getLogger().debug("Match String: " + matcher.group());
 
         for (Condition c : conditions) {
             // This checks that EVERY condition is met (conditions are AND)

@@ -26,7 +26,6 @@ import com.pwn9.filter.engine.rules.action.ActionFactory;
 import com.pwn9.filter.engine.rules.chain.InvalidChainException;
 import com.pwn9.filter.engine.rules.chain.RuleChain;
 import com.pwn9.filter.engine.rules.parser.TextConfigParser;
-import com.pwn9.filter.util.PwnFormatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +34,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+
+import com.pwn9.filter.sponge.PwnFilterSpongePlugin;
+import org.slf4j.Logger;
 import java.util.stream.Collectors;
 
 
@@ -59,24 +57,13 @@ public class FilterService {
     private final Set<FilterClient> registeredClients = Sets.newCopyOnWriteArraySet();
     private final Set<NotifyTarget> notifyTargets = Sets.newCopyOnWriteArraySet();
     private final ActionFactory actionFactory;
-    private final Logger logger;
     private final PointManager pointManager = new PointManager(this);
     // Author Lookup Service
     private final List<AuthorService> authorServices = new CopyOnWriteArrayList<>();
-    /*
-     * Logfile Handling
-     * TODO: Maybe these should be moved into their own class in the future.
-     */
-    private FileHandler logfileHandler;
 
     public FilterService() {
-        this(Logger.getLogger("com.pwn9.filter"));
-    }
-
-    public FilterService(Logger logger) {
-        this.config = new FilterConfig(logger);
+        this.config = new FilterConfig();
         this.actionFactory = new ActionFactory(this);
-        this.logger = logger;
     }
 
     public PointManager getPointManager() {
@@ -92,7 +79,6 @@ public class FilterService {
 
     public void shutdown() {
         unregisterAllClients();
-        clearLogFileHandler();
     }
 
     /**
@@ -160,9 +146,8 @@ public class FilterService {
     }
 
     public void notifyTargets(String perm, String message) {
-        logger.finest(() -> "Notify perm: " + perm + " Message: " + message);
-        notifyTargets.stream()
-                .forEach(target -> target.notifyWithPerm(perm, message));
+        PwnFilterSpongePlugin.getLogger().trace("Notify perm: " + perm + " Message: " + message);
+        notifyTargets.forEach(target -> target.notifyWithPerm(perm, message));
     }
 
     /**
@@ -181,32 +166,6 @@ public class FilterService {
         disableClients();
     }
 
-    public void setLogFileHandler(File logFile) {
-        try {
-            // For now, one logfile, like the old way.
-            String fileName = logFile.toString();
-            logfileHandler = new FileHandler(fileName, true);
-            SimpleFormatter f = new PwnFormatter();
-            logfileHandler.setFormatter(f);
-            logger.addHandler(logfileHandler);
-            logger.info("Now logging to " + fileName + " at level: " + logfileHandler.getLevel());
-
-        } catch (IOException e) {
-            logger.warning("Unable to open logfile.");
-        } catch (SecurityException e) {
-            logger.warning("Security Exception while trying to add file Handler");
-        }
-    }
-
-    public void clearLogFileHandler() {
-        if (logfileHandler != null) {
-            logger.info("Closing Logfile");
-            logfileHandler.close();
-            logger.removeHandler(logfileHandler);
-            logfileHandler = null;
-        }
-    }
-
     public RuleChain parseRules(File ruleFile) throws InvalidChainException {
         TextConfigParser parser = new TextConfigParser(this);
 
@@ -214,36 +173,10 @@ public class FilterService {
     }
 
     /*
-     * Set the level that the LogFile will listen to, based on the Debug
-     * setting.
-     */
-    public void setDebugMode(String s) {
-        switch (s.toLowerCase()) {
-            case "low":
-                logger.setLevel(Level.FINE);
-                break;
-            case "medium":
-                logger.setLevel(Level.FINER);
-                break;
-            case "high":
-                logger.setLevel(Level.FINEST);
-                break;
-            default:
-                logger.setLevel(Level.INFO);
-                break;
-        }
-        logger.info("Logger debug set to: " + s);
-    }
-
-    /*
      * GETTERS
      */
     public ActionFactory getActionFactory() {
         return actionFactory;
-    }
-
-    public Logger getLogger() {
-        return logger;
     }
 
     public void registerAuthorService(AuthorService authorService) {

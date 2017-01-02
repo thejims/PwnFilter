@@ -1,5 +1,0 @@
-#For ParserTest.testShortcuts()
-shortcuts testcuts.txt
-match <pat>
-then replace Replaced
-shortcuts
